@@ -11,9 +11,9 @@ class Fasttext(Model):
     def __init__(self, embedding):
         super().__init__(embedding)
         self.model_name = 'fasttext'
-        self.train_path = os.path.join(self.embedding.dataset.output_path, 'train_fasttext.csv')
-        self.test_path = os.path.join(self.embedding.dataset.output_path, 'test_fasttext.csv')
-        self.validation_path = os.path.join(self.embedding.dataset.output_path, 'validation_fasttext.csv')
+        self.train_path = os.path.join(self.embedding.dataset.output_path, 'fasttext/train.csv')
+        self.test_path = os.path.join(self.embedding.dataset.output_path, 'fasttext/test.csv')
+        self.validation_path = os.path.join(self.embedding.dataset.output_path, 'fasttext/validation.csv')
         self.save_train_test()
 
     def save_train_test(self,):

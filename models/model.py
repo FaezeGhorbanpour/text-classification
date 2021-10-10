@@ -21,13 +21,13 @@ class Model:
         self.validation_x, self.validation_y = embedding.get_validation()
 
     def save_params(self, params):
-        with open(os.path.join(self.embedding.dataset.output_path, self.get_name() + '_params.json'), 'w') as f:
+        with open(os.path.join(self.embedding.dataset.output_path, 'params/' + self.get_name() + '.json'), 'w') as f:
             json.dump(params, f)
 
     def load_params(self):
-        if not os.path.isfile(os.path.join(self.embedding.dataset.output_path, self.get_name() + '_params.json')):
+        if not os.path.isfile(os.path.join(self.embedding.dataset.output_path, 'params/' + self.get_name() + '.json')):
             raise Exception('First run optuna main to find the best parameters')
-        with open(os.path.join(self.embedding.dataset.output_path, self.get_name() + '_params.json'), 'r') as f:
+        with open(os.path.join(self.embedding.dataset.output_path, 'params/' + self.get_name() + '.json'), 'r') as f:
             params = json.load(f)
         return params
 
@@ -109,5 +109,5 @@ class Model:
         print(cm)
         s += '\nconfusion matrix\t' + str(cm)
 
-        with open(os.path.join(self.embedding.dataset.output_path, self.get_name() + '_results.txt'), 'w') as f:
+        with open(os.path.join(self.embedding.dataset.output_path, 'results/' + self.get_name() + '.txt'), 'w') as f:
             f.write(s)

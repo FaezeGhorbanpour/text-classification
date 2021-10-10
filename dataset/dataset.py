@@ -1,6 +1,8 @@
 import collections
 import math
 
+from keras.preprocessing.text import Tokenizer
+from keras_preprocessing.sequence import pad_sequences
 
 class Dataset:
     def __init__(self):
@@ -49,3 +51,18 @@ class Dataset:
 
     def get_validation(self):
         return self.validation_x, self.validation_y
+
+
+    def tokenizer(self):
+
+        tokenizer_obj = Tokenizer()
+
+        tokenizer_obj.fit_on_texts(self.train_x)
+
+        train_x_tokens = tokenizer_obj.texts_to_sequences(self.train_x)
+        test_x_tokens = tokenizer_obj.texts_to_sequences(self.test_x)
+        validation_x_tokens = tokenizer_obj.texts_to_sequences(self.validation_x)
+
+        self.train_x = pad_sequences(train_x_tokens, maxlen=self.max_length, padding='post')
+        self.test_x = pad_sequences(test_x_tokens, maxlen=self.max_length, padding='post')
+        self.validation_x = pad_sequences(validation_x_tokens, maxlen=self.max_length, padding='post')
