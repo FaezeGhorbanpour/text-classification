@@ -7,12 +7,13 @@ class DeepModel(Model):
     def __init__(self, embedding, epochs=30, batch_size=256):
         super().__init__(embedding)
         self.embedding = embedding
-        embedding.categorical_labels()
+        self.train_y, self.test_y, self.validation_y = embedding.categorical_labels()
 
         self.epochs = epochs
         self.batch_size = batch_size
 
-        embedding.dataset.tokenizer()
+        self.train_x, self.test_x, self.validation_x = embedding.dataset.tokenizer()
+
 
         # filepath = os.path.join(self.embedding.dataset.output_path,
         #                         self.get_name() + '_model_{epoch:02d}_{val_accuracy:02f}.h5')

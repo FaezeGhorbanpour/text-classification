@@ -22,4 +22,3 @@ class Tfidf(Embedding):
         self.test_x = self.vect.transform(dataset.test_x)
         self.validation_x = self.vect.transform(dataset.validation_x)
 
-        self.labels_to_id()

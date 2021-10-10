@@ -1,6 +1,10 @@
+import collections
+
 from dataset.dataset import Dataset
 import pandas as pd
 import os
+
+import jieba.posseg as pseg
 
 
 
@@ -30,13 +34,20 @@ class WeiboLoader(Dataset):
         self.validation_x = validation['text'].values
         self.validation_y = validation['label'].values
 
-        # self.max_words = self.get_max_words()
+        self.max_words = self.get_max_words()
         self.max_length = 200
 
-        # def get_max_words(self):
-        #     vocabs = self.get_vocabs()
-        #     r = round(math.log10(len(vocabs)))
-        #     return 10 ** r
+    def get_vocabs(self):
+        def update_vocab_counter(row):
+            for i in row:
+                vocab_counter[i.word] += 1
+
+        vocab_counter = collections.Counter()
+        [update_vocab_counter(pseg.cut(i)) for i in self.train_x]
+        vocabs = sorted(vocab_counter, key=vocab_counter.get, reverse=True)
+        return vocabs
+
+
 
 
 

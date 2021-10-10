@@ -17,6 +17,7 @@ class Dataset:
         self.test_y = None
         self.validation_y = None
         self.max_length = 50
+        self.max_words = 3000
 
     def normalizer(self, text):
         return text
@@ -39,8 +40,9 @@ class Dataset:
 
     def get_max_words(self):
         vocabs = self.get_vocabs()
-        r = round(math.log10(len(vocabs)))
-        return 10 ** r
+        vocabs_number = len(vocabs)
+        r = round(math.log10(vocabs_number))
+        return vocabs_number//(10 ** (r-1)) * 10 ** (r-1)
 
 
     def get_train(self):
@@ -54,7 +56,6 @@ class Dataset:
 
 
     def tokenizer(self):
-
         tokenizer_obj = Tokenizer()
 
         tokenizer_obj.fit_on_texts(self.train_x)
@@ -63,6 +64,7 @@ class Dataset:
         test_x_tokens = tokenizer_obj.texts_to_sequences(self.test_x)
         validation_x_tokens = tokenizer_obj.texts_to_sequences(self.validation_x)
 
-        self.train_x = pad_sequences(train_x_tokens, maxlen=self.max_length, padding='post')
-        self.test_x = pad_sequences(test_x_tokens, maxlen=self.max_length, padding='post')
-        self.validation_x = pad_sequences(validation_x_tokens, maxlen=self.max_length, padding='post')
+        tokenizerd_train_x = pad_sequences(train_x_tokens, maxlen=self.max_length, padding='post')
+        tokenizerd_test_x = pad_sequences(test_x_tokens, maxlen=self.max_length, padding='post')
+        tokenizerd_validation_x = pad_sequences(validation_x_tokens, maxlen=self.max_length, padding='post')
+        return tokenizerd_train_x, tokenizerd_test_x, tokenizerd_validation_x

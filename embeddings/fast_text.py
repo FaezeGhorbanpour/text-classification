@@ -7,7 +7,6 @@ class FasttextEmbedding(Embedding):
     def __init__(self, dataset):
         super().__init__(dataset)
         self.embedding_name = 'fasttext'
-        self.labels_to_id()
 
         self.vect = Fasttext(self)
         model = self.vect.train()

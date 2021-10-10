@@ -14,7 +14,7 @@ class Model:
     def __init__(self, embedding):
         self.model_name = ''
         self.embedding = embedding
-        self.embedding.labels_to_id()
+        self.train_y, self.test_y, self.validation_y = self.embedding.labels_to_id()
 
         self.train_x, self.train_y = embedding.get_train()
         self.test_x, self.test_y = embedding.get_test()
@@ -72,7 +72,7 @@ class Model:
     def main(self):
         preds, probs = self.train_test()
 
-        self.embedding.labels_to_id()  # todo
+        self.train_y, self.test_y, self.validation_y = self.embedding.labels_to_id()  # todo
 
         f_score_micro = f1_score(self.test_y, preds, average='micro', zero_division=0)
         f_score_macro = f1_score(self.test_y, preds, average='macro', zero_division=0)

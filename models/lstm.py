@@ -20,7 +20,7 @@ class Lstm(DeepModel):
         else:
             second_layer = LSTM(params['hidden_layer'], dropout=params['dropout'], recurrent_dropout=params['dropout'])
 
-        model = Sequential([Embedding(self.embedding.dataset.get_max_words(), params['hidden_layer'],
+        model = Sequential([Embedding(self.embedding.dataset.max_words, params['hidden_layer'],
                                       input_length=self.embedding.dataset.max_length),
                             second_layer,
                             Dense(self.embedding.dataset.get_labels_count(), activation='softmax')])
