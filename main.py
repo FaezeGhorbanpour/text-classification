@@ -1,4 +1,5 @@
 import argparse
+import tensorflow as tf
 
 from dataset.twitter.dataset_loader import TwitterLoader
 from dataset.weibo.dataset_loader import WeiboLoader
@@ -15,6 +16,10 @@ from models.xgboost import Xgboost
 if __name__ == '__main__':
     import os
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+    config = tf.compat.v1.ConfigProto(allow_soft_placement=True, log_device_placement=True)
+    config.gpu_options.allow_growth = True
+    tf.compat.v1.Session(config=config)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, required=True)

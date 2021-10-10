@@ -34,7 +34,7 @@ class WeiboLoader(Dataset):
         self.validation_x = validation['text'].values
         self.validation_y = validation['label'].values
 
-        self.max_words = self.get_max_words()
+        self.max_words = 30000
         self.max_length = 200
 
     def get_vocabs(self):

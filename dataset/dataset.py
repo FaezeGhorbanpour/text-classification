@@ -56,10 +56,9 @@ class Dataset:
 
 
     def tokenizer(self):
-        tokenizer_obj = Tokenizer()
+        tokenizer_obj = Tokenizer(self.max_words)
 
         tokenizer_obj.fit_on_texts(self.train_x)
-
         train_x_tokens = tokenizer_obj.texts_to_sequences(self.train_x)
         test_x_tokens = tokenizer_obj.texts_to_sequences(self.test_x)
         validation_x_tokens = tokenizer_obj.texts_to_sequences(self.validation_x)

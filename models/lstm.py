@@ -1,5 +1,5 @@
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Bidirectional, LSTM, Embedding, Dense
+from tensorflow.keras.layers import Bidirectional, LSTM, Embedding, Dense, BatchNormalization
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop
 
 import numpy as np
@@ -16,14 +16,18 @@ class Lstm(DeepModel):
     def model(self, params):
         if params['bidirectional']:
             second_layer = Bidirectional(
-                LSTM(params['hidden_layer'] // 2, dropout=params['dropout'], recurrent_dropout=params['dropout']))
+                LSTM(params['hidden_layer'] // 2, dropout=params['dropout'], recurrent_dropout=params['dropout'],
+                     activation=params['activation'],))
         else:
-            second_layer = LSTM(params['hidden_layer'], dropout=params['dropout'], recurrent_dropout=params['dropout'])
+            second_layer = LSTM(params['hidden_layer'], dropout=params['dropout'], recurrent_dropout=params['dropout'],
+                                activation=params['activation'])
 
         model = Sequential([Embedding(self.embedding.dataset.max_words, params['hidden_layer'],
                                       input_length=self.embedding.dataset.max_length),
                             second_layer,
-                            Dense(self.embedding.dataset.get_labels_count(), activation='softmax')])
+                            Dense(params['hidden_layer']//2, activation=params['activation'], name='dense1'),
+                            BatchNormalization(name='normalization'),
+                            Dense(self.embedding.dataset.get_labels_count(), activation='softmax', name='dense2'),])
 
         model.compile(loss=params['loss'], optimizer=Adam(params['lr'], amsgrad=True), metrics=['accuracy'])
 
@@ -33,14 +37,15 @@ class Lstm(DeepModel):
         params = {
             "loss": 'categorical_crossentropy',
             "bidirectional": trial.suggest_categorical('bidirectional', [True, False]),
-            "optimizer": trial.suggest_categorical('optimizer', [Adam, SGD, RMSprop]),
+            # "optimizer": trial.suggest_categorical('optimizer', [Adam, SGD, RMSprop]),
             "dropout": trial.suggest_categorical("dropout", [0.2, 0.4, 0.6, 0.8]),
             "hidden_layer": trial.suggest_categorical("hidden_layer", [16, 32, 64, 128, 256]),
             "lr": trial.suggest_loguniform("lr", 1e-5, 1e-1),
+            'activation': trial.suggest_categorical('activation', ['relu', 'tanh', ]),
         }
         model = self.model(params)
         model.fit(self.train_x, self.train_y, validation_data=(self.validation_x, self.validation_y),
-                  epochs=self.epochs, batch_size=self.batch_size, shuffle=True,
+                  epochs=self.epochs, batch_size=self.batch_size, shuffle=True, verbose=1,
                   callbacks=self.callbacks_list)
         probs = model.predict(self.validation_x)
         preds = np.argmax(probs, axis=1)

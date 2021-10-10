@@ -1,5 +1,5 @@
 from tensorflow.keras import Sequential, Input, Model
-from tensorflow.keras.layers import Embedding, Dense, Convolution1D, concatenate, GlobalMaxPooling1D, Dropout
+from tensorflow.keras.layers import Embedding, Dense, Convolution1D, concatenate, GlobalMaxPooling1D, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam, SGD, RMSprop
 
 import numpy as np
@@ -14,23 +14,24 @@ class MultiConv(DeepModel):
         self.model_name = 'multi_conv'
 
     def model(self, params):
-        graph_in = Input(shape=(self.embedding.dataset.get_max_words(), params['hidden_layer']))
+        graph_in = Input(shape=(self.embedding.dataset.max_length, params['hidden_layer']), name='input')
 
         convs = []
         for filter_size in params['filter_size']:
-            x = Convolution1D(params['conv_layer'], filter_size, padding='same', activation=params['activation'])(graph_in)
+            x = Convolution1D(params['conv_layer'], filter_size, padding='same', activation=params['activation'], name='conv'+str(filter_size))(graph_in)
             convs.append(x)
 
         graph_out = concatenate(convs, axis=1)
         graph_out = GlobalMaxPooling1D()(graph_out)
         graph = Model(graph_in, graph_out)
 
-        model = Sequential([Embedding(self.embedding.dataset.get_max_words(), params['hidden_layer'],
+        model = Sequential([Embedding(input_dim=self.embedding.dataset.max_words, output_dim=params['hidden_layer'],
                                       input_length=self.embedding.dataset.max_length),
                             graph,
-                            Dropout(params['dropout']),
-                            Dense(params['hidden_layer']//2, activation=params['activation']),
-                            Dense(self.embedding.dataset.get_labels_count(), activation='softmax')])
+                            Dropout(params['dropout'], name='dropout'),
+                            Dense(params['hidden_layer']//2, activation=params['activation'], name='dense1'),
+                            BatchNormalization(name='normalization'),
+                            Dense(self.embedding.dataset.get_labels_count(), activation='softmax', name='dense2')])
 
         model.compile(loss=params['loss'], optimizer=Adam(params['lr'], amsgrad=True), metrics=['accuracy'])
 
@@ -49,7 +50,7 @@ class MultiConv(DeepModel):
         }
         model = self.model(params)
         model.fit(self.train_x, self.train_y, validation_data=(self.validation_x, self.validation_y),
-                  epochs=self.epochs, batch_size=self.batch_size, shuffle=True,
+                  epochs=self.epochs, batch_size=self.batch_size, shuffle=True, verbose=1,
                   callbacks=self.callbacks_list)
         probs = model.predict(self.validation_x)
         preds = np.argmax(probs, axis=1)

@@ -8,3 +8,9 @@ gensim
 xgboost
 tensorflow-gpu
 keras
+fasttext
+jieba
+nltk
+catboost
+lightgbm
+optuna
