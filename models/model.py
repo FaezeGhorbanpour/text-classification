@@ -2,7 +2,7 @@ import json
 import os
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.metrics import classification_report, roc_curve, auc, confusion_matrix
-
+import numpy as np
 import optuna
 from optuna.pruners import MedianPruner
 from optuna.samplers import TPESampler
@@ -73,6 +73,7 @@ class Model:
         preds, probs = self.train_test()
 
         self.train_y, self.test_y, self.validation_y = self.embedding.labels_to_id()  # todo
+        probs = np.max(probs, axis=1)
 
         f_score_micro = f1_score(self.test_y, preds, average='micro', zero_division=0)
         f_score_macro = f1_score(self.test_y, preds, average='macro', zero_division=0)
@@ -100,12 +101,12 @@ class Model:
 
         report = classification_report(self.test_y, preds, target_names=self.embedding.dataset.labels_name,
                                        zero_division=0)
-        print('classification report')
+        print('classification report\n')
         print(report)
         s += '\nclassification report\t' + str(report)
 
         cm = confusion_matrix(self.test_y, preds)
-        print('confusion matrix')
+        print('confusion matrix\n')
         print(cm)
         s += '\nconfusion matrix\t' + str(cm)
 

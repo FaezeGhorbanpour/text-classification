@@ -1,5 +1,6 @@
 from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 
+from callbacks.print_results import PrintResults
 from models.model import Model
 
 
@@ -15,12 +16,13 @@ class DeepModel(Model):
         self.train_x, self.test_x, self.validation_x = embedding.dataset.tokenizer()
 
 
-        # filepath = os.path.join(self.embedding.dataset.output_path,
+        # filepath = os.path.join(self.embedding.datasets.output_path,
         #                         self.get_name() + '_model_{epoch:02d}_{val_accuracy:02f}.h5')
         # checkpoint = ModelCheckpoint(filepath, verbose=1, monitor='val_loss', save_best_only=True, mode='max')
+        print_results = PrintResults(self.validation_x, self.validation_y)
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=self.epochs // 4, verbose=1)
         early_stopping = EarlyStopping(monitor='val_loss', min_delta=0, patience=self.epochs // 2, verbose=1)
-        self.callbacks_list = [reduce_lr, early_stopping]
+        self.callbacks_list = [print_results, reduce_lr, early_stopping]
 
 
 

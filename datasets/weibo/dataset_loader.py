@@ -1,6 +1,6 @@
 import collections
 
-from dataset.dataset import Dataset
+from datasets.dataset import Dataset
 import pandas as pd
 import os
 
@@ -14,7 +14,7 @@ class WeiboLoader(Dataset):
         super().__init__()
         self.data_name = 'weibo'
         self.data_path = '/home/faeze/PycharmProjects/fake_news_detection/data/weibo/'
-        self.output_path = 'dataset/weibo/'
+        self.output_path = 'datasets/weibo/'
         self.language = 'chi'
         self.labels_name = ['real', 'fake']
 

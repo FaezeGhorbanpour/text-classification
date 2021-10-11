@@ -45,7 +45,7 @@ class Lstm(DeepModel):
         }
         model = self.model(params)
         model.fit(self.train_x, self.train_y, validation_data=(self.validation_x, self.validation_y),
-                  epochs=self.epochs, batch_size=self.batch_size, shuffle=True, verbose=1,
+                  epochs=self.epochs, batch_size=self.batch_size, shuffle=True, verbose=2,
                   callbacks=self.callbacks_list)
         probs = model.predict(self.validation_x)
         preds = np.argmax(probs, axis=1)
@@ -56,9 +56,8 @@ class Lstm(DeepModel):
     def train_test(self):
         params = self.load_params()
         model = self.model(params)
-        model.fit(self.train_x, self.train_y, validation_data=(self.test_x, self.test_y),
-                  epochs=self.epochs, batch_size=self.batch_size, verbose=0,
-                  callbacks=self.callbacks_list)
+        model.fit(self.train_x, self.train_y, epochs=self.epochs, batch_size=self.batch_size, shuffle=True,
+                  validation_data=(self.test_x, self.test_y), callbacks=self.callbacks_list, )
         probs = model.predict(self.test_x)
         preds = np.argmax(probs, axis=1)
         return preds, probs
