@@ -1,6 +1,6 @@
 import numpy as np
 from embeddings.embedding import Embedding
-from models.fast_text import Fasttext
+from models.deep_learning_models.fast_text import Fasttext
 
 
 class FasttextEmbedding(Embedding):

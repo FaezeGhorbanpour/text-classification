@@ -1,11 +1,11 @@
 from tensorflow.keras import Sequential, Input, Model
 from tensorflow.keras.layers import Embedding, Dense, Convolution1D, concatenate, GlobalMaxPooling1D, Dropout, BatchNormalization
-from tensorflow.keras.optimizers import Adam, SGD, RMSprop
+from tensorflow.keras.optimizers import Adam
 
 import numpy as np
 from sklearn import metrics
 
-from models.deep_model import DeepModel
+from models.deep_learning_models.deep_model import DeepModel
 
 
 class MultiConv(DeepModel):

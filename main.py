@@ -4,14 +4,17 @@ import tensorflow as tf
 from datasets.twitter.dataset_loader import TwitterLoader
 from datasets.weibo.dataset_loader import WeiboLoader
 from embeddings.tfidf import Tfidf
-from models.catboost import Catboost
-from models.fast_text import Fasttext
-from models.light_gbm import LightGBM
-from models.logistic_regression import Logistic
-from models.lstm import Lstm
-from models.multi_conv import MultiConv
-from models.svm import Svm
-from models.xgboost import Xgboost
+from models.machine_learning_models.catboost import Catboost
+from models.deep_learning_models.fast_text import Fasttext
+from models.machine_learning_models.light_gbm import LightGBM
+from models.machine_learning_models.logistic_regression import Logistic
+from models.deep_learning_models.lstm import Lstm
+from models.deep_learning_models.multi_conv import MultiConv
+from models.machine_learning_models.svm import Svm
+from models.machine_learning_models.xgboost import Xgboost
+from models.transformer_models.albert import Albert
+from models.transformer_models.bert import Bert
+from models.transformer_models.xlnet import Xlnet
 
 if __name__ == '__main__':
     import os
@@ -63,6 +66,12 @@ if __name__ == '__main__':
         model = Lstm(embedding)
     elif args.model == 'multi_conv':
         model = MultiConv(embedding)
+    elif args.model == 'bert':
+        model = Bert(embedding)
+    elif args.model == 'albert':
+        model = Albert(embedding)
+    elif args.model == 'xlnet':
+        model = Xlnet(embedding)
     else:
         print(model)
         raise Exception('Invalid model name!')
