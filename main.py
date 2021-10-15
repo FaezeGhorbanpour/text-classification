@@ -1,8 +1,8 @@
 import argparse
 import tensorflow as tf
 
-from datasets.twitter.dataset_loader import TwitterLoader
-from datasets.weibo.dataset_loader import WeiboLoader
+from local_datasets.twitter.dataset_loader import TwitterLoader
+from local_datasets.weibo.dataset_loader import WeiboLoader
 from embeddings.tfidf import Tfidf
 from models.machine_learning_models.catboost import Catboost
 from models.deep_learning_models.fast_text import Fasttext
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         dataset = WeiboLoader()
     else:
         print(dataset)
-        raise Exception('Invalid datasets name!')
+        raise Exception('Invalid local_datasets name!')
 
     embedding = None
     if args.embed == 'tfidf':

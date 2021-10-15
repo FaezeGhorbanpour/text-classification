@@ -16,7 +16,7 @@ class DeepModel(Model):
         self.train_x, self.test_x, self.validation_x = embedding.dataset.tokenizer()
 
 
-        # filepath = os.path.join(self.embedding.datasets.output_path,
+        # filepath = os.path.join(self.embedding.local_datasets.output_path,
         #                         self.get_name() + '_model_{epoch:02d}_{val_accuracy:02f}.h5')
         # checkpoint = ModelCheckpoint(filepath, verbose=1, monitor='val_loss', save_best_only=True, mode='max')
         print_results = PrintResults(self.validation_x, self.validation_y)

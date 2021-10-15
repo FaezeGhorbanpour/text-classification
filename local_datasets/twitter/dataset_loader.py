@@ -1,4 +1,4 @@
-from datasets.dataset import Dataset
+from local_datasets.dataset import Dataset
 import pandas as pd
 import os
 
@@ -8,7 +8,7 @@ class TwitterLoader(Dataset):
         super().__init__()
         self.data_name = 'twitter'
         self.data_path = '/home/faeze/PycharmProjects/fake_news_detection/data/twitter'
-        self.output_path = 'datasets/twitter/'
+        self.output_path = 'local_datasets/twitter/'
         self.language = 'en'
         self.labels_name = ['real', 'fake']
 
