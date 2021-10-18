@@ -1,3 +1,6 @@
+import os
+
+from tensorflow import keras
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Bidirectional, LSTM, Embedding, Dense, BatchNormalization
 from tensorflow.keras.optimizers import Adam
@@ -29,13 +32,12 @@ class Lstm(DeepModel):
                             BatchNormalization(name='normalization'),
                             Dense(self.embedding.dataset.get_labels_count(), activation='softmax', name='dense2'),])
 
-        model.compile(loss=params['loss'], optimizer=Adam(params['lr'], amsgrad=True), metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer=Adam(params['lr'], amsgrad=True), metrics=['accuracy'])
 
         return model
 
     def objective(self, trial):
         params = {
-            "loss": 'categorical_crossentropy',
             "bidirectional": trial.suggest_categorical('bidirectional', [True, False]),
             # "optimizer": trial.suggest_categorical('optimizer', [Adam, SGD, RMSprop]),
             "dropout": trial.suggest_categorical("dropout", [0.2, 0.4, 0.6, 0.8]),
@@ -44,20 +46,14 @@ class Lstm(DeepModel):
             'activation': trial.suggest_categorical('activation', ['relu', 'tanh', ]),
         }
         model = self.model(params)
-        model.fit(self.train_x, self.train_y, validation_data=(self.validation_x, self.validation_y),
-                  epochs=self.epochs, batch_size=self.batch_size, shuffle=True, verbose=2,
-                  callbacks=self.callbacks_list)
-        probs = model.predict(self.validation_x)
-        preds = np.argmax(probs, axis=1)
+        preds, probs = self.train(model)
         reals = np.argmax(self.validation_y, axis=1)
         accuracy = metrics.accuracy_score(reals, preds)
         return accuracy
 
+
     def train_test(self):
         params = self.load_params()
         model = self.model(params)
-        model.fit(self.train_x, self.train_y, epochs=self.epochs, batch_size=self.batch_size, shuffle=True,
-                  validation_data=(self.test_x, self.test_y), callbacks=self.callbacks_list, )
-        probs = model.predict(self.test_x)
-        preds = np.argmax(probs, axis=1)
+        preds, probs = self.train(model)
         return preds, probs

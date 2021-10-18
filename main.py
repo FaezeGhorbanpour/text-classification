@@ -1,6 +1,7 @@
 import argparse
 import tensorflow as tf
 
+from embeddings.tokenizer import Tokenizing
 from local_datasets.twitter.dataset_loader import TwitterLoader
 from local_datasets.weibo.dataset_loader import WeiboLoader
 from embeddings.tfidf import Tfidf
@@ -19,6 +20,8 @@ from models.transformer_models.xlnet import Xlnet
 if __name__ == '__main__':
     import os
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+    tf.compat.v1.reset_default_graph()
 
     config = tf.compat.v1.ConfigProto(allow_soft_placement=True, log_device_placement=True)
     config.gpu_options.allow_growth = True
@@ -45,6 +48,8 @@ if __name__ == '__main__':
     embedding = None
     if args.embed == 'tfidf':
         embedding = Tfidf(dataset)
+    elif args.embed == 'tokenizer':
+        embedding = Tokenizing(dataset)
     else:
         print(embedding)
         raise Exception('Invalid embedding name!')

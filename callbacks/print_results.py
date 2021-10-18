@@ -9,22 +9,24 @@ from sklearn.metrics import f1_score, accuracy_score, roc_curve, auc, cohen_kapp
 
 
 class PrintResults(Callback):
-    def __init__(self, validation_x, validation_y, accuracy=0.60):
+    def __init__(self, validation_x, validation_y, wanted_accuracy=0.60, path='', model_name='', save_results=False):
         super(PrintResults).__init__()
         self.validation_x = validation_x
         self.validation_y = validation_y
-        self.accuracy = accuracy
+        self.accuracy = wanted_accuracy
+        self.path = path
+        self.mode_name = model_name
+        self.save_results = save_results
 
     def on_epoch_end(self, epoch, logs=None):
         p = np.asarray(self.model.predict(self.validation_x))
         probs = np.max(p, axis=1)
         preds = np.argmax(p, axis=1)
-        
+
         test_y = np.argmax(self.validation_y, axis=1)
         accuarcy = accuracy_score(test_y, preds)
 
         if accuarcy >= self.accuracy:
-
             f_score_micro = f1_score(test_y, preds, average='micro', zero_division=0)
             f_score_macro = f1_score(test_y, preds, average='macro', zero_division=0)
             f_score_weighted = f1_score(test_y, preds, average='weighted', zero_division=0)
@@ -58,11 +60,15 @@ class PrintResults(Callback):
             print(cm)
             s += '\nconfusion matrix\t' + str(cm)
 
-            with open('report_epoch_' + str(epoch) + '_accuracy_' + str(round(accuarcy, 2)) + '.txt', 'w') as f:
-                f.write(s)
+            if self.save_results:
+                with open(os.path.join(self.path, self.model_name + '+report_epoch_' + str(epoch) + '_accuracy_' + str(
+                        round(accuarcy, 2))) + '.txt', 'w') as f:
+                    f.write(s)
 
-            pd.DataFrame(p).to_csv('prediction_epoch_' + str(epoch) + '_accuracy_' + str(round(accuarcy, 2)) + '.csv')
-            pd.DataFrame({'fpr':fpr, 'tpr':tpr}).to_csv('auc_epoch_' + str(epoch) + '_accuracy_' + str(round(accuarcy, 2)) + '.csv')
+                pd.DataFrame(p).to_csv(os.path.join(self.path, self.model_name + '_prediction_epoch_' + str(
+                    epoch) + '_accuracy_' + str(round(accuarcy, 2)) + '.csv'))
+                pd.DataFrame({'fpr': fpr, 'tpr': tpr}).to_csv(os.path.join(self.path, self.model_name + '_auc_epoch_' + str(
+                    epoch) + '_accuracy_' + str(round(accuarcy, 2)) + '.csv'))
 
             self.accuracy = accuarcy
         return
