@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from tensorflow import keras, metrics
+from tensorflow import keras
 from tensorflow.keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, EarlyStopping
 
 from callbacks.print_results import PrintResults
