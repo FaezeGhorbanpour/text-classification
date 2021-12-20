@@ -15,7 +15,6 @@ class Model:
         self.model_name = ''
         self.embedding = embedding
         self.train_y, self.test_y, self.validation_y = self.embedding.labels_to_id()
-
         self.train_x, self.train_y = embedding.get_train()
         self.test_x, self.test_y = embedding.get_test()
         self.validation_x, self.validation_y = embedding.get_validation()
@@ -67,13 +66,14 @@ class Model:
 
     def train_test(self):
         print('train_test function does not implemented.')
-        return [], []
+        return np.array([]), np.array([])
 
     def main(self):
         preds, probs = self.train_test()
 
         self.train_y, self.test_y, self.validation_y = self.embedding.labels_to_id()  # todo
-        probs = np.max(probs, axis=1)
+        if len(probs.shape) > 1:
+            probs = np.max(probs, axis=1)
 
         f_score_micro = f1_score(self.test_y, preds, average='micro', zero_division=0)
         f_score_macro = f1_score(self.test_y, preds, average='macro', zero_division=0)

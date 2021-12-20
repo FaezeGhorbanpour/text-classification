@@ -1,7 +1,8 @@
 import argparse
-import tensorflow as tf
 
+from embeddings.embedding import Embedding
 from embeddings.tokenizer import Tokenizing
+from local_datasets.sentiment.dataset_loader import SentimentLoader
 from local_datasets.twitter.dataset_loader import TwitterLoader
 from local_datasets.weibo.dataset_loader import WeiboLoader
 from embeddings.tfidf import Tfidf
@@ -14,22 +15,18 @@ from models.deep_learning_models.multi_conv import MultiConv
 from models.machine_learning_models.svm import Svm
 from models.machine_learning_models.xgboost import Xgboost
 from models.transformer_models.albert import Albert
-from models.transformer_models.bert import Bert
+from models.transformer_models.mbert import mBertClassifier
+from models.transformer_models.parsbert import ParsBertClassifier
 from models.transformer_models.xlnet import Xlnet
 
 if __name__ == '__main__':
     import os
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-    tf.compat.v1.reset_default_graph()
-
-    config = tf.compat.v1.ConfigProto(allow_soft_placement=True, log_device_placement=True)
-    config.gpu_options.allow_growth = True
-    tf.compat.v1.Session(config=config)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--data', type=str, required=True)
-    parser.add_argument('--embed', type=str, required=True)
+    parser.add_argument('--embed', type=str, required=False)
     parser.add_argument('--model', type=str, required=True)
     parser.add_argument('--use_optuna', type=int, required=False)
     parser.add_argument('--extra', type=str, required=False)
@@ -41,6 +38,8 @@ if __name__ == '__main__':
         dataset = TwitterLoader()
     elif args.data == 'weibo':
         dataset = WeiboLoader()
+    elif args.data == 'sentiment':
+        dataset = SentimentLoader()
     else:
         print(dataset)
         raise Exception('Invalid local_datasets name!')
@@ -51,8 +50,8 @@ if __name__ == '__main__':
     elif args.embed == 'tokenizer':
         embedding = Tokenizing(dataset)
     else:
-        print(embedding)
-        raise Exception('Invalid embedding name!')
+        embedding = Embedding(dataset)
+        # raise Exception('Invalid embedding name!')
 
     model = None
     if args.model == 'logistic':
@@ -71,8 +70,10 @@ if __name__ == '__main__':
         model = Lstm(embedding)
     elif args.model == 'multi_conv':
         model = MultiConv(embedding)
-    elif args.model == 'bert':
-        model = Bert(embedding)
+    elif args.model == 'parsbert':
+        model = ParsBertClassifier(embedding)
+    elif args.model == 'mbert':
+        model = mBertClassifier(embedding)
     elif args.model == 'albert':
         model = Albert(embedding)
     elif args.model == 'xlnet':

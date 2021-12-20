@@ -1,5 +1,8 @@
 import collections
 import math
+import pandas as pd
+import numpy as np
+import torch
 
 
 class Dataset:
@@ -41,6 +44,16 @@ class Dataset:
         vocabs_number = len(vocabs)
         r = round(math.log10(vocabs_number))
         return vocabs_number//(10 ** (r-1)) * 10 ** (r-1)
+
+    def get_max_length(self):
+        train = pd.DataFrame({'text': self.train_x})
+        train['len'] = train.text.apply(lambda x: len(x.split()))
+        print('max length: ', max(train['len']))
+        print('min length: ', min(train['len']))
+        print('mean length: ', np.mean(train['len']))
+        print('average length: ', np.average(train['len']))
+
+
 
 
     def get_train(self):

@@ -61,6 +61,6 @@ class Fasttext(Model):
             labels, prob = model.predict(text, 1)
             pred = int(labels[0][-1])
             return pred, prob
-        preds = [score(i)[0] for i in self.embedding.dataset.test_x]
-        probs = [score(i)[1] for i in self.embedding.dataset.test_x]
+        preds = np.array([score(i)[0] for i in self.embedding.dataset.test_x])
+        probs = np.array([score(i)[1] for i in self.embedding.dataset.test_x])
         return preds, probs
